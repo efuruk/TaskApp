@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;
-import io.realmannotations.PrimaryKey;
+import io.realm.annotations.PrimaryKey;
 
 public class Task extends RealmObject implements Serializable {
     private String title;

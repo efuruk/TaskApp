@@ -1,5 +1,7 @@
 package jp.techacademy.eri.takashima.taskapp;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.content.DialogInterface;
@@ -15,9 +17,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import io.realm.Realm;
-import io.realm.RealmChangeListner;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -52,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         //set Realm
-        mRealm = Realm.getDefaultInstane();
+        mRealm = Realm.getDefaultInstance();
         mTaskRealmResults = mRealm.where(Task.class).findAll();
         mTaskRealmResults.sort("date", Sort.DESCENDING);
         mRealm.addChangeListener(mRealmListener);
@@ -89,12 +92,23 @@ public class MainActivity extends AppCompatActivity {
                 builder.setMessage(task.getTitle() + "を削除しますか");
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onCLick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         RealmResults<Task> results = mRealm.where(Task.class).equalTo("id", task.getId()).findAll();
 
                         mRealm.beginTransaction();
                         results.clear();
                         mRealm.commitTransaction();
+
+                        Intent resultIntent = new Intent(getApplicationContext(), TaskAlarmReceiver.class);
+                        PendingIntent resultPendingIntent = PendingIntent.getBroadcast(
+                                MainActivity.this,
+                                task.getId(),
+                                resultIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT
+                        );
+
+                        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+                        alarmManager.cancel(resultPendingIntent);
 
                         reloadListView();
                     }
@@ -111,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void reloadListView() {
 
-        ArrayList<String> taskArrayList = new ArrayList<>();
+        ArrayList<Task> taskArrayList = new ArrayList<>();
 
         for (int i = 0; i < mTaskRealmResults.size(); i++) {
             Task task = new Task();
@@ -133,6 +147,16 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         mRealm.close();
+    }
+    private void addTaskForTest() {
+        Task task = new Task();
+        task.setTitle("作業");
+        task.setContents("プログラムを書いてPUSHする");
+        task.setDate(new Date());
+        task.setId(0);
+        mRealm.beginTransaction();
+        mRealm.copyToRealmOrUpdate(task);
+        mRealm.commitTransaction();
     }
 }
 

@@ -12,31 +12,36 @@ import android.view.LayoutInflater;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class TaskAdapter extends BaseAdapter {
     private LayoutInflater mLayoutInflater;
-    private ArrayList<String> mTaskArrayList;
+    private ArrayList<Task> mTaskArrayList;
 
     public TaskAdapter(Context context) {
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public void setTaskArrayList(ArrayList<String> taskArrayList) {
+    public void setTaskArrayList(ArrayList<Task> taskArrayList) {
         mTaskArrayList = taskArrayList;
     }
     @Override
     public int getCount() {
+
         return mTaskArrayList.size();
     }
 
     @Override
     public Object getItem(int position) {
+
         return mTaskArrayList.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return mTaskArrayList.get(position).getId();
     }
 
     @Override
@@ -47,7 +52,11 @@ public class TaskAdapter extends BaseAdapter {
         TextView textView1 = (TextView)convertView.findViewById(android.R.id.text1);
         TextView textView2 = (TextView)convertView.findViewById(android.R.id.text2);
 
-        textView1.setText(mTaskArrayList.get(position));
+        textView1.setText(mTaskArrayList.get(position).getTitle());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE);
+        Date date = mTaskArrayList.get(position).getDate();
+        textView2.setText(simpleDateFormat.format(date));
+
         return convertView;
     }
 }

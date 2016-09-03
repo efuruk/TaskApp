@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/content_edit_text"
         android:layout_alignParentRight="true"
-        android:text="--/--"
+        android:text="--:--"
         style="@style/Widget.AppCompat.Button.Borderless"/>
     <Button
         android:id="@+id/done_button"
