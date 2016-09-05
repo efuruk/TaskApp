@@ -31,6 +31,7 @@ public class TaskAlarmReceiver extends BroadcastReceiver {
         builder.setContentTitle(task.getTitle());
         builder.setContentText(task.getContents());
 
+
         //タップ後、アプリ起動
         Intent startAppIntent = new Intent(context, MainActivity.class);
         startAppIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);

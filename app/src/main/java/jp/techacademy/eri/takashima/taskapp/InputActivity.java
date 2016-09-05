@@ -27,7 +27,7 @@ public class InputActivity extends AppCompatActivity {
 
     private int mYear, mMonth, mDay, mHour, mMinute;
     private Button mDateButton, mTimeButton;
-    private EditText mTitleEdit, mContentEdit;
+    private EditText mTitleEdit, mContentEdit, mCategoryEdit;
     private Task mTask;
     private View.OnClickListener mOnDateClickListener = new View.OnClickListener() {
         @Override
@@ -90,6 +90,7 @@ public class InputActivity extends AppCompatActivity {
         findViewById(R.id.done_button).setOnClickListener(mOnDoneClickListener);
         mTitleEdit = (EditText) findViewById(R.id.title_edit_text);
         mContentEdit= (EditText) findViewById(R.id.content_edit_text);
+        mCategoryEdit=(EditText) findViewById(R.id.category_edit_text);
 
         Intent intent = getIntent();
         mTask = (Task) intent.getSerializableExtra(MainActivity.EXTRA_TASK);
@@ -105,6 +106,7 @@ public class InputActivity extends AppCompatActivity {
         } else {
             mTitleEdit.setText(mTask.getTitle());
             mContentEdit.setText(mTask.getContents());
+            mCategoryEdit.setText(mTask.getCategory());
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(mTask.getDate());
@@ -137,9 +139,11 @@ public class InputActivity extends AppCompatActivity {
         }
         String title = mTitleEdit.getText().toString();
         String content = mContentEdit.getText().toString();
+        String category = mCategoryEdit.getText().toString();
 
         mTask.setTitle(title);
         mTask.setContents(content);
+        mTask.setCategory(category);
         GregorianCalendar calendar = new GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute);
         Date date = calendar.getTime();
         mTask.setDate(date);
