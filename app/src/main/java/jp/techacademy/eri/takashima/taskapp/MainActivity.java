@@ -75,7 +75,15 @@ public class MainActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    String answer =mEditText.getText().toString();
 
+                    
+
+                    if(answer.length() == 0) {
+                        AlertDialog.Builder builder2 = new AlertDialog.Builder(MainActivity.this);
+                        builder2.setMessage("入力してください");
+                        return;
+                    }
                 }
 
         });
