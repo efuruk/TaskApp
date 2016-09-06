@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.EditText;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
+    private EditText mEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
         //set Realm
         mRealm = Realm.getDefaultInstance();
         mTaskRealmResults = mRealm.where(Task.class).findAll();
@@ -64,6 +69,17 @@ public class MainActivity extends AppCompatActivity {
         mTaskAdapter = new TaskAdapter(MainActivity.this);
         mListView = (ListView) findViewById(R.id.listView1);
 
+        mEditText = (EditText) findViewById(R.id.edit_text1);
+
+        Button button1 =(Button) findViewById(R.id.button1);
+        button1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+
+        });
+
         //when click on ListView
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -73,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent =new Intent(MainActivity.this, InputActivity.class);
                 intent.putExtra(EXTRA_TASK, task);
-
                 startActivity(intent);
             }
         });
@@ -123,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
         });
         reloadListView();
     }
+
+
     private void reloadListView() {
 
         ArrayList<Task> taskArrayList = new ArrayList<>();
