@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.EditText;
 import android.widget.Button;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,25 +71,6 @@ public class MainActivity extends AppCompatActivity {
         mTaskAdapter = new TaskAdapter(MainActivity.this);
         mListView = (ListView) findViewById(R.id.listView1);
 
-        mEditText = (EditText) findViewById(R.id.edit_text1);
-
-        Button button1 =(Button) findViewById(R.id.button1);
-        button1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String answer =mEditText.getText().toString();
-
-                    
-
-                    if(answer.length() == 0) {
-                        AlertDialog.Builder builder2 = new AlertDialog.Builder(MainActivity.this);
-                        builder2.setMessage("入力してください");
-                        return;
-                    }
-                }
-
-        });
-
         //when click on ListView
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -95,12 +78,11 @@ public class MainActivity extends AppCompatActivity {
                 //入力編集する画面に遷移
                 Task task = (Task) parent.getAdapter().getItem(position);
 
-                Intent intent =new Intent(MainActivity.this, InputActivity.class);
+                Intent intent = new Intent(MainActivity.this, InputActivity.class);
                 intent.putExtra(EXTRA_TASK, task);
                 startActivity(intent);
             }
         });
-
         //ListViewを長く押したときの処理
         mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -130,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                                 PendingIntent.FLAG_UPDATE_CURRENT
                         );
 
-                        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
                         alarmManager.cancel(resultPendingIntent);
 
                         reloadListView();
@@ -145,8 +127,48 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         reloadListView();
-    }
 
+        mEditText = (EditText) findViewById(R.id.edit_text1);
+        Button button1 = (Button) findViewById(R.id.button1);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String answer = mEditText.getText().toString();
+                Log.d("ANDROID", "answer");}
+
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String answer = mEditText.getText().toString();
+                Task task = (Task) parent.getAdapter().getItem(position);
+
+                if (answer.equals("")) {
+                    mTaskRealmResults = mRealm.where(Task.class).findAll();
+                    reloadListView();
+                } else {
+                    mTaskRealmResults = mRealm.where(Task.class).equalTo("answer", task.getCategory()).findAll();
+                    mTaskRealmResults.sort("date", Sort.DESCENDING);
+                    reloadListView();
+
+                    ArrayList<Task> taskArrayList = new ArrayList<>();
+
+                    for(int i=0; i <mTaskRealmResults.size(); i++) {
+                        Task task2 = new Task();
+
+                        task2.setId(mTaskRealmResults.get(i).getId());
+                        task2.setTitle(mTaskRealmResults.get(i).getTitle());
+                        task2.setContents(mTaskRealmResults.get(i).getContents());
+                        task2.setDate(mTaskRealmResults.get(i).getDate());
+                        task2.setCategory(mTaskRealmResults.get(i).getCategory());
+
+                        taskArrayList.add(task2);
+                    }
+                    mTaskAdapter.setTaskArrayList(taskArrayList);
+                    mListView.setAdapter(mTaskAdapter);
+                    mTaskAdapter.notifyDataSetChanged();
+                    }
+                }
+
+            });
+    }
 
     private void reloadListView() {
 
