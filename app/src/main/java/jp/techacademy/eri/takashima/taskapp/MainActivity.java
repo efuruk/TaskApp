@@ -22,6 +22,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -31,6 +32,7 @@ import io.realm.Sort;
 
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_TASK = "jp.techacademy.eri.takashima.taskapp.TASK";
+
 
     private Realm mRealm;
     private RealmResults<Task> mTaskRealmResults;
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
     private EditText mEditText;
+    private Task mTask;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
 
         //set Realm
         mRealm = Realm.getDefaultInstance();
@@ -134,36 +137,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String answer = mEditText.getText().toString();
-                Log.d("ANDROID", "answer");}
-
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String answer = mEditText.getText().toString();
-                Task task = (Task) parent.getAdapter().getItem(position);
+                mTaskAdapter = new TaskAdapter(MainActivity.this);
+                mListView = (ListView) findViewById(R.id.listView1);
 
                 if (answer.equals("")) {
+                    Log.d("ANDROID", "solution");
+
                     mTaskRealmResults = mRealm.where(Task.class).findAll();
                     reloadListView();
+
+
                 } else {
-                    mTaskRealmResults = mRealm.where(Task.class).equalTo("answer", task.getCategory()).findAll();
-                    mTaskRealmResults.sort("date", Sort.DESCENDING);
+                    mTask = new Task();
+                    String getCategory = mTask.getCategory();
+
+                    mTaskRealmResults = mRealm.where(Task.class).equalTo("category", mEditText.getText().toString()).findAll();
+                    Log.d("PARTS", "response");
+
                     reloadListView();
 
-                    ArrayList<Task> taskArrayList = new ArrayList<>();
-
-                    for(int i=0; i <mTaskRealmResults.size(); i++) {
-                        Task task2 = new Task();
-
-                        task2.setId(mTaskRealmResults.get(i).getId());
-                        task2.setTitle(mTaskRealmResults.get(i).getTitle());
-                        task2.setContents(mTaskRealmResults.get(i).getContents());
-                        task2.setDate(mTaskRealmResults.get(i).getDate());
-                        task2.setCategory(mTaskRealmResults.get(i).getCategory());
-
-                        taskArrayList.add(task2);
-                    }
-                    mTaskAdapter.setTaskArrayList(taskArrayList);
-                    mListView.setAdapter(mTaskAdapter);
-                    mTaskAdapter.notifyDataSetChanged();
                     }
                 }
 
